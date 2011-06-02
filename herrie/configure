@@ -144,7 +144,7 @@ do
 		unset CFG_XSPF
 		;;
 
-	alsa|ao|coreaudio|null|oss|pulse)
+	alsa|ao|coreaudio|stderr|null|oss|pulse)
 		CFG_AO=$1
 		;;
 	
