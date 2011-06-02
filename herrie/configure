@@ -38,6 +38,7 @@ CFG_DBUS=yes
 CFG_HTTP=yes
 CFG_MODPLUG=yes
 CFG_MP3=yes
+unset CFG_GST
 CFG_RES_INIT=yes
 CFG_SCROBBLER=yes
 unset CFG_SETPROCTITLE
@@ -147,6 +148,10 @@ do
 	alsa|ao|coreaudio|null|oss|pulse)
 		CFG_AO=$1
 		;;
+
+        gst)
+                CFG_GST=yes
+                ;;
 	
 	no_strip)
 		unset CFG_STRIP
@@ -244,6 +249,14 @@ then
 	CFLAGS="$CFLAGS -DBUILD_MODPLUG"
 	test_pkgconfig "libmodplug" "libmodplug" "_audio_format_modplug"
 	SRCS="$SRCS audio_format_modplug"
+fi
+# GST support
+if [ "$CFG_GST" != "" ]
+then
+        CFLAGS="$CFLAGS -DBUILD_GST"
+        SRCS="$SRCS audio_format_gst"
+        test_pkgconfig "GStreamer" "gstreamer-0.10" ""
+        test_pkgconfig "GStreamer App" "gstreamer-app-0.10" ""
 fi
 # MP3 support
 if [ "$CFG_MP3" != "" ]
@@ -371,6 +384,7 @@ echo "- Using $CFG_AO audio output"
 [ "$CFG_HTTP" != "" ] && echo "- Support for HTTP streams"
 [ "$CFG_MODPLUG" != "" ] && echo "- Support for libmodplug"
 [ "$CFG_MP3" != "" ] && echo "- Support for MP3"
+[ "$CFG_GST" != "" ] && echo "- Support for GStreamer decoding"
 [ "$CFG_SCROBBLER" != "" ] && echo "- Support for AudioScrobbler"
 [ "$CFG_SNDFILE" != "" ] && echo "- Support for libsndfile"
 [ "$CFG_VORBIS" != "" ] && echo "- Support for Ogg Vorbis"
