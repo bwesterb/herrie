@@ -359,20 +359,21 @@ gst_read(struct audio_file *fd, int16_t *buf, size_t len)
         int16_t* cast_gbuf = NULL;
 
         do {
+                size_t to_copy = 0;
+
                 if(!data->gbuf) {
                         if(gst_pull_buffer(fd, data) == -1)
                                 return 0;
                 }
 
-                /* TODO replace with memcpy or the like */
-                cast_gbuf = (int16_t*)data->gbuf->data;
-                do {
-                        buf[written] = cast_gbuf[data->gbuf_o];
-                        data->gbuf_o++;
-                        written++;
-                } while (written < len && data->gbuf_o 
-                                        < data->gbuf->size
-                                                / sizeof(int16_t));
+                to_copy = MIN(len - written, data->gbuf->size / sizeof(int16_t)
+                                                - data->gbuf_o);
+
+                memcpy(&(buf[written]),
+                       &(((int16_t*)data->gbuf->data)[data->gbuf_o]),
+                       to_copy * sizeof(int16_t));
+                written += to_copy;
+                data->gbuf_o += to_copy;
                 
                 /* Is the gbuf depleted? */
                 if(data->gbuf->size / sizeof(int16_t)
