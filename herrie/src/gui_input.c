@@ -427,6 +427,12 @@ bad:	gui_msgbar_warn(_("Bad time format."));
  * @brief A simple binding from a keyboard character input to a function.
  */
 struct gui_binding {
+        /**
+         * @brief Behavior of "vi multiplier"
+         *  'n'    No effect
+         *  's'    Simple: just call the command n times
+         */
+        int mult;
 	/**
 	 * @brief The window that should be focussed.
 	 */
@@ -447,76 +453,76 @@ struct gui_binding {
 static struct gui_binding kbdbindings[] = {
 	/* Application-wide keyboard bindings */
 #ifdef BUILD_VOLUME
-	{ -1, '(',			gui_playq_volume_down },
-	{ -1, ')',			gui_playq_volume_up },
+	{ 's', -1, '(',			gui_playq_volume_down },
+	{ 's', -1, ')',			gui_playq_volume_up },
 #endif /* BUILD_VOLUME */
-	{ -1, '<',			gui_input_cursong_seek_backward },
-	{ -1, '>',			gui_input_cursong_seek_forward },
-	{ -1, 'a',			gui_browser_playq_add_after },
-	{ -1, 'A',			gui_browser_playq_add_tail },
-	{ -1, 'b',			playq_cursong_next },
-	{ -1, 'c',			playq_cursong_pause },
-	{ -1, 'C',			gui_browser_chdir },
-	{ -1, 'd',			gui_playq_song_remove },
-	{ -1, 'D',			gui_playq_song_remove_all },
-	{ -1, 'h',			gui_browser_dir_parent },
-	{ -1, 'i',			gui_browser_playq_add_before },
-	{ -1, 'I',			gui_browser_playq_add_head },
-	{ -1, 'J',			gui_input_cursong_seek_jump },
-	{ -1, 'l',			gui_browser_dir_enter },
-	{ -1, 'L',			gui_input_locate },
-	{ -1, 'q',			gui_input_askquit },
-	{ -1, 'r',			playq_repeat_toggle },
-	{ -1, 'R',			gui_playq_song_randomize },
-	{ -1, 'v',			playq_cursong_stop },
-	{ -1, 'w',			gui_browser_write_playlist },
-	{ -1, 'x',			gui_playq_song_select },
-	{ -1, 'z',			playq_cursong_prev },
-	{ -1, '[',			gui_playq_song_move_up },
-	{ -1, ']',			gui_playq_song_move_down },
-	{ -1, '{',			gui_playq_song_move_head },
-	{ -1, '}',			gui_playq_song_move_tail },
-	{ -1, '~',			gui_browser_gotohome },
-	{ -1, '\t', 			gui_input_switchfocus },
-	{ -1, CTRL('W'),		gui_input_switchfocus },
-	{ -1, '/',			gui_input_search },
-	{ -1, 'n',			gui_input_searchnext },
-	{ -1, KEY_LEFT,			gui_browser_dir_parent },
-	{ -1, KEY_RIGHT,		gui_browser_dir_enter },
+	{ 's', -1, '<',			gui_input_cursong_seek_backward },
+	{ 's', -1, '>',			gui_input_cursong_seek_forward },
+	{ 's', -1, 'a',			gui_browser_playq_add_after },
+	{ 's', -1, 'A',			gui_browser_playq_add_tail },
+	{ 's', -1, 'b',			playq_cursong_next },
+	{ 'n', -1, 'c',			playq_cursong_pause },
+	{ 'n', -1, 'C',			gui_browser_chdir },
+	{ 's', -1, 'd',			gui_playq_song_remove },
+	{ 'n', -1, 'D',			gui_playq_song_remove_all },
+	{ 's', -1, 'h',			gui_browser_dir_parent },
+	{ 's', -1, 'i',			gui_browser_playq_add_before },
+	{ 's', -1, 'I',			gui_browser_playq_add_head },
+	{ 'n', -1, 'J',			gui_input_cursong_seek_jump },
+	{ 's', -1, 'l',			gui_browser_dir_enter },
+	{ 'n', -1, 'L',			gui_input_locate },
+	{ 'n', -1, 'q',			gui_input_askquit },
+	{ 'n', -1, 'r',			playq_repeat_toggle },
+	{ 'n', -1, 'R',			gui_playq_song_randomize },
+	{ 'n', -1, 'v',			playq_cursong_stop },
+	{ 'n', -1, 'w',			gui_browser_write_playlist },
+	{ 'n', -1, 'x',			gui_playq_song_select },
+	{ 's', -1, 'z',			playq_cursong_prev },
+	{ 's', -1, '[',			gui_playq_song_move_up },
+	{ 's', -1, ']',			gui_playq_song_move_down },
+	{ 's', -1, '{',			gui_playq_song_move_head },
+	{ 's', -1, '}',			gui_playq_song_move_tail },
+	{ 'n', -1, '~',			gui_browser_gotohome },
+	{ 'n', -1, '\t', 		gui_input_switchfocus },
+	{ 'n', -1, CTRL('W'),		gui_input_switchfocus },
+	{ 'n', -1, '/',			gui_input_search },
+	{ 's', -1, 'n',			gui_input_searchnext },
+	{ 's', -1, KEY_LEFT,		gui_browser_dir_parent },
+	{ 's', -1, KEY_RIGHT,		gui_browser_dir_enter },
 
 	/* Keyboard bindings for the file browser */
-	{ GUI_FOCUS_BROWSER, ' ',	gui_browser_cursor_pagedown },
-	{ GUI_FOCUS_BROWSER, 'F',	gui_browser_gotofolder },
-	{ GUI_FOCUS_BROWSER, 'f',	gui_browser_fullpath },
-	{ GUI_FOCUS_BROWSER, 'G',	gui_browser_cursor_tail },
-	{ GUI_FOCUS_BROWSER, 'g',	gui_browser_cursor_head },
-	{ GUI_FOCUS_BROWSER, 'j',	gui_browser_cursor_down },
-	{ GUI_FOCUS_BROWSER, 'k',	gui_browser_cursor_up },
-	{ GUI_FOCUS_BROWSER, CTRL('B'), gui_browser_cursor_pageup },
-	{ GUI_FOCUS_BROWSER, CTRL('F'), gui_browser_cursor_pagedown },
-	{ GUI_FOCUS_BROWSER, KEY_DOWN,	gui_browser_cursor_down },
-	{ GUI_FOCUS_BROWSER, KEY_END,	gui_browser_cursor_tail },
-	{ GUI_FOCUS_BROWSER, KEY_HOME,	gui_browser_cursor_head },
-	{ GUI_FOCUS_BROWSER, KEY_NPAGE,	gui_browser_cursor_pagedown },
-	{ GUI_FOCUS_BROWSER, KEY_PPAGE,	gui_browser_cursor_pageup },
-	{ GUI_FOCUS_BROWSER, KEY_UP,	gui_browser_cursor_up },
+	{ 's', GUI_FOCUS_BROWSER, ' ',	        gui_browser_cursor_pagedown },
+	{ 'n', GUI_FOCUS_BROWSER, 'F',	        gui_browser_gotofolder },
+	{ 'n', GUI_FOCUS_BROWSER, 'f',	        gui_browser_fullpath },
+	{ 'n', GUI_FOCUS_BROWSER, 'G',	        gui_browser_cursor_tail },
+	{ 'n', GUI_FOCUS_BROWSER, 'g',	        gui_browser_cursor_head },
+	{ 's', GUI_FOCUS_BROWSER, 'j',	        gui_browser_cursor_down },
+	{ 's', GUI_FOCUS_BROWSER, 'k',	        gui_browser_cursor_up },
+	{ 's', GUI_FOCUS_BROWSER, CTRL('B'),    gui_browser_cursor_pageup },
+	{ 's', GUI_FOCUS_BROWSER, CTRL('F'),    gui_browser_cursor_pagedown },
+	{ 's', GUI_FOCUS_BROWSER, KEY_DOWN,	gui_browser_cursor_down },
+	{ 's', GUI_FOCUS_BROWSER, KEY_END,	gui_browser_cursor_tail },
+	{ 'n', GUI_FOCUS_BROWSER, KEY_HOME,	gui_browser_cursor_head },
+	{ 's', GUI_FOCUS_BROWSER, KEY_NPAGE,	gui_browser_cursor_pagedown },
+	{ 's', GUI_FOCUS_BROWSER, KEY_PPAGE,	gui_browser_cursor_pageup },
+	{ 's', GUI_FOCUS_BROWSER, KEY_UP,	gui_browser_cursor_up },
 
 	/* Keyboard bindings for the playlist */
-	{ GUI_FOCUS_PLAYQ, ' ',		gui_playq_cursor_pagedown },
-	{ GUI_FOCUS_PLAYQ, 'F',		gui_playq_gotofolder },
-	{ GUI_FOCUS_PLAYQ, 'f',		gui_playq_fullpath },
-	{ GUI_FOCUS_PLAYQ, 'G',		gui_playq_cursor_tail },
-	{ GUI_FOCUS_PLAYQ, 'g',		gui_playq_cursor_head },
-	{ GUI_FOCUS_PLAYQ, 'j',		gui_playq_cursor_down },
-	{ GUI_FOCUS_PLAYQ, 'k',		gui_playq_cursor_up },
-	{ GUI_FOCUS_PLAYQ, CTRL('B'),	gui_playq_cursor_pageup },
-	{ GUI_FOCUS_PLAYQ, CTRL('F'),	gui_playq_cursor_pagedown },
-	{ GUI_FOCUS_PLAYQ, KEY_DOWN,	gui_playq_cursor_down },
-	{ GUI_FOCUS_PLAYQ, KEY_END,	gui_playq_cursor_tail },
-	{ GUI_FOCUS_PLAYQ, KEY_HOME,	gui_playq_cursor_head },
-	{ GUI_FOCUS_PLAYQ, KEY_NPAGE,	gui_playq_cursor_pagedown },
-	{ GUI_FOCUS_PLAYQ, KEY_PPAGE,	gui_playq_cursor_pageup },
-	{ GUI_FOCUS_PLAYQ, KEY_UP,	gui_playq_cursor_up },
+	{ 's', GUI_FOCUS_PLAYQ, ' ',		gui_playq_cursor_pagedown },
+	{ 'n', GUI_FOCUS_PLAYQ, 'F',		gui_playq_gotofolder },
+	{ 'n', GUI_FOCUS_PLAYQ, 'f',		gui_playq_fullpath },
+	{ 'n', GUI_FOCUS_PLAYQ, 'G',		gui_playq_cursor_tail },
+	{ 'n', GUI_FOCUS_PLAYQ, 'g',		gui_playq_cursor_head },
+	{ 's', GUI_FOCUS_PLAYQ, 'j',		gui_playq_cursor_down },
+	{ 's', GUI_FOCUS_PLAYQ, 'k',		gui_playq_cursor_up },
+	{ 's', GUI_FOCUS_PLAYQ, CTRL('B'),	gui_playq_cursor_pageup },
+	{ 's', GUI_FOCUS_PLAYQ, CTRL('F'),	gui_playq_cursor_pagedown },
+	{ 's', GUI_FOCUS_PLAYQ, KEY_DOWN,	gui_playq_cursor_down },
+	{ 'n', GUI_FOCUS_PLAYQ, KEY_END,	gui_playq_cursor_tail },
+	{ 'n', GUI_FOCUS_PLAYQ, KEY_HOME,	gui_playq_cursor_head },
+	{ 's', GUI_FOCUS_PLAYQ, KEY_NPAGE,	gui_playq_cursor_pagedown },
+	{ 's', GUI_FOCUS_PLAYQ, KEY_PPAGE,	gui_playq_cursor_pageup },
+	{ 's', GUI_FOCUS_PLAYQ, KEY_UP,	        gui_playq_cursor_up },
 };
 /**
  * @brief Amount of keybindings.
@@ -569,6 +575,7 @@ gui_input_loop(void)
 {
 	int ch;
 	unsigned int i;
+        unsigned int mult = 0; /* numeric multiplier ala vi */
 
 #ifdef G_OS_UNIX
 	signal(SIGHUP, gui_input_sighandler);
@@ -580,6 +587,7 @@ gui_input_loop(void)
 
 	for (;;) {
 		ch = gui_input_getch();
+
 		gui_msgbar_flush();
 
 		for (i = 0; i < NUM_BINDINGS; i++) {
@@ -589,15 +597,24 @@ gui_input_loop(void)
 			     kbdbindings[i].focus != gui_input_curfocus))
 				continue;
 
+                        if (mult == 0)
+                                mult = 1;
+                        if (kbdbindings[i].mult == 'n')
+                                mult = 1;
 #ifdef BUILD_DBUS
 			dbus_lock();
-			kbdbindings[i].func();
-			dbus_unlock();
-#else /* !BUILD_DBUS */
-			kbdbindings[i].func();
 #endif /* BUILD_DBUS */
+                        for (; mult != 0; mult--)
+                                kbdbindings[i].func();
+#ifdef BUILD_DBUS
+			dbus_unlock();
+#endif /* BUILD_DBUS */
+                        mult = 0;
 			break;
 		}
+
+                if('0' <= ch && ch <= '9')
+                        mult = mult * 10 + (ch - '0');
 
 		gui_draw_done();
 	}
