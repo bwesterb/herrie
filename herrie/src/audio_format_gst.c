@@ -131,8 +131,6 @@ on_bus_error (GstBus* bus, GstMessage* msg, void* user_data)
 {
         struct audio_file* fd = user_data;
         struct gst_drv_data *data = fd->drv_data;
-        GError* err = NULL;
-        char* dbg_info = NULL;
 
         g_assert(GST_MESSAGE_TYPE(msg) == GST_MESSAGE_ERROR);
 
@@ -149,14 +147,13 @@ static gboolean
 on_bus_tag (GstBus* bus, GstMessage* msg, void* user_data)
 {
         struct audio_file* fd = user_data;
-        struct gst_drv_data *data = fd->drv_data;
         GstTagList* tags;
         char* artist = NULL;
         char* title = NULL;
 #ifdef BUILD_SCROBBLER
         char* album = NULL;
 #endif /* BUILD_SCROBBLER */
-        gint64 duration;
+        guint64 duration;
 
         g_assert(GST_MESSAGE_TYPE(msg) == GST_MESSAGE_TAG);
 
@@ -188,6 +185,8 @@ on_bus_tag (GstBus* bus, GstMessage* msg, void* user_data)
         }
 
         gst_tag_list_free(tags);
+
+        return TRUE;
 }
 
 /**
@@ -208,14 +207,14 @@ on_bus_duration (GstBus* bus, GstMessage* msg, void* user_data)
         /* The duration might be in a format we don't care about
          * (bytes); or it might be GST_CLOCK_TIME_NONE which
          * means we've got to query it for ourselves */
-        if(duration == GST_CLOCK_TIME_NONE ||
+        if((GstClockTime)duration == GST_CLOCK_TIME_NONE ||
                         format != GST_FORMAT_TIME) {
                 gboolean successful;
                 format = GST_FORMAT_TIME;
                 successful = gst_element_query_duration(data->pipeline,
                                         &format, &duration);
-                if(!successful || format != GST_FORMAT_TIME
-                                || duration == GST_CLOCK_TIME_NONE)
+                if(!successful || format != GST_FORMAT_TIME ||
+                                (GstClockTime)duration == GST_CLOCK_TIME_NONE)
                         return TRUE;
         }
 
@@ -231,7 +230,7 @@ on_bus_duration (GstBus* bus, GstMessage* msg, void* user_data)
 int
 gst_open(struct audio_file *fd, const char *ext)
 {
-        struct gst_drv_data *data;
+        struct gst_drv_data *data = NULL;
         GstElement* pipeline = NULL;
         GstElement* appsink = NULL;
         GString* pipeline_desc;
@@ -356,7 +355,6 @@ gst_read(struct audio_file *fd, int16_t *buf, size_t len)
 {
         struct gst_drv_data *data = fd->drv_data;
         size_t written = 0;
-        int16_t* cast_gbuf = NULL;
 
         do {
                 size_t to_copy = 0;

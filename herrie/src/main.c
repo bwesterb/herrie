@@ -30,6 +30,10 @@
 
 #include "stdinc.h"
 
+#ifdef BUILD_GST
+#include <gst/gst.h>
+#endif /* BUILD_GST */
+
 #include "audio_output.h"
 #include "config.h"
 #include "dbus.h"
